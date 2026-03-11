@@ -2,6 +2,11 @@ from behave import given, when, then
 from app.eshop import Product, ShoppingCart, Order
 
 
+class FakeShippingService:
+    def create_shipping(self, shipping_type, product_ids, order_id, due_date):
+        return "fake_tracking_123"
+
+
 @given('Product with price {price} and available amount {availability}')
 def create_product(context, price, availability):
     context.product = Product(
@@ -48,8 +53,9 @@ def submit_cart_order_step(context):
 
 @when('I place the order')
 def place_order_step(context):
-    context.order = Order(context.cart)
-    context.order.place_order()
+    fake_service = FakeShippingService()
+    context.order = Order(context.cart, fake_service)
+    context.order.place_order(shipping_type="standard")
 
 
 @when('I check availability with parameter {value}')
@@ -57,7 +63,6 @@ def check_availability(context, value):
     context.exception = None
 
     parsed_value = None if value == "None" else int(value)
-
     try:
         context.product.is_available(parsed_value)
     except Exception as e:
