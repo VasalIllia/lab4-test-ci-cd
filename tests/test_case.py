@@ -104,6 +104,8 @@ class TestEShop(unittest.TestCase):
                          msg="Корзина має бути порожньою після виклику submit_cart_order")
 
     def test_order_place_order_calls_submit(self):
+        # Чи делегує Order виклик до ShoppingCart за допомогою Mock      
+          
         self.cart.submit_cart_order = MagicMock()
         mock_shipping_service = MagicMock()
         order = Order(self.cart, mock_shipping_service)
